@@ -1,0 +1,6 @@
+---
+# handlers file for init-env
+- name: restart_network 
+  service:
+    name: network
+    state: restarted

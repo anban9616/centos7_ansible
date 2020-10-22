@@ -1,0 +1,13 @@
+---
+# tasks file for copy-ssh-key
+- name: ping hosts
+  ping:
+    data: pongpong
+
+- name: copy key to remote hosts
+  lineinfile:
+    path: /root/.ssh/authorized_keys
+    state: present
+    regexp: '^ssh-rsa'
+    create: yes
+    line: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCzxzHWAmB7WlckkKzsiERRdfnfLqVetQN2nnAwfVI8Nwwer71JQSQPaPdiwZSjJ6XYFPtMAw71OuiRh0gC1aTkc/0iudKd3gQ+rJA/hlsxlxHtPBbAo87RHkZRWfZJZ10VzG1LmPGdkY3ayuHzfPWvsve025vWk9viAsWkOvV/zp2ABgPV4Pezmrr5vpV1BgDzYSdCb/W23mgG6Q4wmWjaqOz+pJi5Y2h039qXrjHNj+jZYBsyfL9Pj7v2LGkm9JeHofv3Yo5cf4mtkzwQxi7yNwTWyqHc7hPnkFw2twX1jznyqMuQvpVDs557iBkgHRYpdeSK9rbA8LjlrCYPUaK/ root@localhost.localdomain'

@@ -1,0 +1,74 @@
+---
+# tasks file for init-env
+- name: find repo file
+  find:
+    paths: /etc/yum.repos.d
+    patterns: "*.repo"
+  register: files_to_delete
+  tags: repo
+
+- name: remove repo file
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ files_to_delete.files }}"
+  tags: repo
+
+- name: Add multiple repositories into all.repo
+  yum_repository:
+    name: "{{ item.0 }}" 
+    description: "{{ item.0 }} Yum repo" 
+    file: all
+    baseurl: "{{ item.1 }}"
+    gpgcheck: no
+    enabled: yes
+  with_together: 
+    - "{{ yum_repo.name }}"
+    - "{{ yum_repo.url }}"
+  tags: repo
+
+- name: Template a file to /etc/sysconfig/network-scripts/
+  template:
+    src: network/ifcfg-{{ item }}.j2 
+    dest: /etc/sysconfig/network-scripts/ifcfg-{{ item }}
+    owner: root
+    group: root
+    mode: '0644'
+  with_items: "{{ ansible_interfaces }}"
+  tags: network
+  notify: restart_network 
+
+- name: Install Common Packages
+  yum:
+    name: 
+      - "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items: 
+    - "{{ install_pkgs }}"
+  tags: install_pkgs 
+
+- name: Disable SELinux
+  selinux:
+    state: disabled
+  tags: disable_selinux 
+
+- name: Disable firewalld
+  service:
+    name: firewalld
+    state: stopped
+    enabled: no
+  tags: stop_service
+
+- name: Disable NetworkManager 
+  service:
+    name: NetworkManager 
+    state: stopped
+    enabled: no
+  tags: stop_service
+  notify: restart_network
+
+
+
+
+

@@ -1,0 +1,34 @@
+---
+# vars file for init-env
+network_ip: "{{ ansible_ens33['ipv4']['address'].split('.')|last }}" 
+
+install_pkgs:
+  - gcc
+  - gcc-c++
+  - vim
+  - yum-utils
+  - wget
+  - lrzsz
+  - unzip
+  - net-tools
+  - htop
+
+yum_repo:
+  name:
+    - base
+    - centosplus
+    - cloud
+    - epel
+    - extras
+    - fasttrack
+    - updates
+    - kvm-common 
+  url:
+    - http://10.0.0.10/centos/$releasever/base
+    - http://10.0.0.10/centos/$releasever/centosplus         
+    - http://10.0.0.10/centos/$releasever/cloud
+    - http://10.0.0.10/centos/$releasever/epel               
+    - http://10.0.0.10/centos/$releasever/extras
+    - http://10.0.0.10/centos/$releasever/fasttrack
+    - http://10.0.0.10/centos/$releasever/updates
+    - http://10.0.0.10/centos/$releasever/virt/kvm-common
