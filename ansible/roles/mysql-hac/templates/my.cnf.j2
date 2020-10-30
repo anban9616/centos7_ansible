@@ -1,0 +1,43 @@
+# For advice on how to change settings please see
+# http://dev.mysql.com/doc/refman/5.7/en/server-configuration-defaults.html
+
+[mysqld]
+#
+# Remove leading # and set to the amount of RAM for the most important data
+# cache in MySQL. Start at 70% of total RAM for dedicated server, else 10%.
+# innodb_buffer_pool_size = 128M
+#
+# Remove leading # to turn on a very important data integrity option: logging
+# changes to the binary log between backups.
+# log_bin
+#
+# Remove leading # to set options mainly useful for reporting servers.
+# The server defaults are faster for transactions and fast SELECTs.
+# Adjust sizes as needed, experiment to find the optimal values.
+# join_buffer_size = 128M
+# sort_buffer_size = 2M
+# read_rnd_buffer_size = 2M
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links=0
+
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+log-bin=mysql-bin
+
+
+server-id = {{ server_id }}
+#主键从1开始，主键递增2，这两个个参数一般用在主主同步中，用来错开自增值, 防止键值冲突
+auto_increment_offset = 1     
+auto_increment_increment = 2
+log_bin_trust_function_creators = 1
+#将函数复制到slave
+binlog-ignore-db=mysql              
+#忽略备份的数据库
+binlog-ignore-db=information_schema 
+#忽略备份的数据库
+slave-skip-errors = all
+#忽略所有复制产生的错误
+

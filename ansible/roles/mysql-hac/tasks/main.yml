@@ -1,0 +1,139 @@
+---
+# tasks file for mysql-hac
+
+- name: install mysql-python
+  yum:
+    name: MySQL-python
+    state: present
+
+- name: template my.cnf
+  template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: restart mysqld
+  service:
+    name: mysqld
+    state: restarted
+
+- name: create mysql user and grant
+  mysql_user:
+    login_user: "{{ conn_username }}"
+    login_password: "{{ conn_password }}"
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    priv: "{{ item.priv }}"
+    state: present
+    host: "%"
+  with_items:
+    - "{{ mysql_users }}"
+  tags: users
+
+
+# node2 获取 node2 slave 的状态
+- name: node2 slave status
+  mysql_replication:
+    login_unix_socket: "{{ conn_socket }}"
+    login_user: "{{ conn_username }}"
+    login_password: "{{ conn_password }}"
+    mode: getslave
+  register: node2_slave_status
+  ignore_errors: true
+  when:
+    - '"node2" in group_names'
+  tags: slave_status
+
+# node2 获取 node1 master 的状态
+- name: node1 master status
+  mysql_replication:
+    login_unix_socket: "{{ conn_socket }}"
+    login_user: "{{ conn_username }}"
+    login_password: "{{ conn_password }}"
+    mode: getmaster
+  register: node1_master_status
+  delegate_to: "{{ groups.node1.0 }}"
+  when:
+    - '"node2" in group_names'
+    - node2_slave_status.Is_Slave == false
+
+# node2 设置为 node1 的 slave
+- name: node2 slave to node1
+  mysql_replication:
+    login_unix_socket: "{{ conn_socket }}"
+    login_user: "{{ conn_username }}"
+    login_password: "{{ conn_password }}"
+    mode: changemaster
+    master_host: "{{ groups.node1.0 }}"
+    master_port: "{{ conn_port }}"
+    master_log_file: "{{ node1_master_status.File }}"
+    master_log_pos: "{{ node1_master_status.Position }}"
+    master_user: "{{ item.name }}"
+    master_password: "{{ item.password }}"
+  with_items:
+    - "{{ mysql_users.0 }}"
+  when:
+    - '"node2" in group_names'
+    - node2_slave_status.Is_Slave == false
+
+# node1 获取 node1 slave 的状态
+- name: node1 slave status
+  mysql_replication:
+    login_unix_socket: "{{ conn_socket }}"
+    login_user: "{{ conn_username }}"
+    login_password: "{{ conn_password }}"
+    mode: getslave
+  register: node1_slave_status
+  ignore_errors: true
+  when:
+    - '"node1" in group_names'
+  tags: slave_status
+
+# node1 获取 node2 master 的状态
+- name: node2 master status
+  mysql_replication:
+    login_unix_socket: "{{ conn_socket }}"
+    login_user: "{{ conn_username }}"
+    login_password: "{{ conn_password }}"
+    mode: getmaster
+  register: node2_master_status
+  delegate_to: "{{ groups.node2.0 }}"
+  when:
+    - '"node1" in group_names'
+    - node1_slave_status.Is_Slave == false
+
+# node1 设置为 node2 的 slave
+- name: node1 slave to node2
+  mysql_replication:
+    login_unix_socket: "{{ conn_socket }}"
+    login_user: "{{ conn_username }}"
+    login_password: "{{ conn_password }}"
+    mode: changemaster
+    master_host: "{{ groups.node2.0 }}"
+    master_port: "{{ conn_port }}"
+    master_log_file: "{{ node2_master_status.File }}"
+    master_log_pos: "{{ node2_master_status.Position }}"
+    master_user: "{{ item.name }}"
+    master_password: "{{ item.password }}"
+  with_items:
+    - "{{ mysql_users.0 }}"
+  when:
+    - '"node1" in group_names'
+    - node1_slave_status.Is_Slave == false
+
+# 开始slave
+- name: start slave
+  mysql_replication:
+    login_unix_socket: "{{ conn_socket }}"
+    login_user: "{{ conn_username }}"
+    login_password: "{{ conn_password }}"
+    mode: startslave
+
+
+- name: debug
+  debug:
+    msg: "{{ node1_slave_status }} {{ node2_slave_status }}"
+  tags: slave_status
+
