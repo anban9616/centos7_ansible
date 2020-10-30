@@ -27,16 +27,22 @@ log-error=/var/log/mysqld.log
 pid-file=/var/run/mysqld/mysqld.pid
 log-bin=mysql-bin
 
+{% if 'node1' in group_names %}
+server-id = 11
+auto_increment_offset = 1
+{% endif %}
+{% if 'node2' in group_names %}
+server-id = 12
+auto_increment_offset = 2
+{% endif %}
 
-server-id = {{ server_id }}
 #主键从1开始，主键递增2，这两个个参数一般用在主主同步中，用来错开自增值, 防止键值冲突
-auto_increment_offset = 1     
 auto_increment_increment = 2
 log_bin_trust_function_creators = 1
 #将函数复制到slave
-binlog-ignore-db=mysql              
+binlog-ignore-db=mysql
 #忽略备份的数据库
-binlog-ignore-db=information_schema 
+binlog-ignore-db=information_schema
 #忽略备份的数据库
 slave-skip-errors = all
 #忽略所有复制产生的错误
