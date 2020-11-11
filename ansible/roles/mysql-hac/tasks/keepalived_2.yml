@@ -1,0 +1,11 @@
+- name: copy keepalived_2.conf
+  template:
+    src: keepalived_2.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    backup: yes
+
+- name: copy kill_keepalived.sh
+  copy:
+    src: kill_keepalived.sh
+    dest: "{{ keepalived.kill_keepalived }}"
+    mode: '0744'

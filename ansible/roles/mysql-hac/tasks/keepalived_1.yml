@@ -1,0 +1,11 @@
+- name: copy keepalived_1.conf
+  template:
+    src: keepalived_1.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    backup: yes
+
+- name: copy mysql_check.sh
+  copy:
+    src: mysql_check.sh
+    dest: "{{ keepalived.mysql_check }}"
+    mode: '0744'

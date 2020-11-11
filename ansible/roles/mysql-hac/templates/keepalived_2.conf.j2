@@ -1,0 +1,76 @@
+! Configuration File for keepalived
+
+global_defs {
+   router_id MySQL-HA
+}
+
+{% if 'node1' in group_names %}
+vrrp_instance VI_1 {
+    state BACKUP
+    interface {{ keepalived.interface }}
+    virtual_router_id 51
+    priority 100
+    advert_int 1
+    nopreempt
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        {{ keepalived.vip }}
+    }
+}
+virtual_server {{ groups.node1.0 }} 3306 {
+	delay_loop 6
+	#lvs 默认是NAT rr的模式
+	#lvs_sched rr
+	#lvs_method NAT
+	protocol TCP
+	persistence_timeout 50
+	real_server {{ groups.node1.0 }} 3306 {
+		weight 1
+		notify_down "{{ keepalived.kill_keepalived }}"
+		TCP_CHECK {
+			connect_timeout 3
+			connect_port 3306
+			retry 3
+			delay_before_retry 3
+		}
+	}
+}
+{% endif %}
+{% if 'node2' in group_names %}
+vrrp_instance VI_1 {
+    state BACKUP
+    interface {{ keepalived.interface }}
+    virtual_router_id 51
+    priority 100
+    advert_int 1
+    nopreempt
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        {{ keepalived.vip }}
+    }
+}
+virtual_server {{ groups.node2.0 }} 3306 {
+	delay_loop 6
+	#lvs 默认是NAT rr的模式
+	#lvs_sched rr
+	#lvs_method NAT
+	protocol TCP
+	persistence_timeout 50
+	real_server {{ groups.node2.0 }} 3306 {
+		weight 1
+		notify_down "{{ keepalived.kill_keepalived }}"
+		TCP_CHECK {
+			connect_timeout 3
+			connect_port 3306
+			retry 3
+			delay_before_retry 3
+		}
+	}
+}
+{% endif %}

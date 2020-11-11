@@ -31,6 +31,7 @@
   with_items:
     - "{{ mysql_users }}"
   tags: users
+  no_log: true
 
 
 # node2 获取 node2 slave 的状态
@@ -137,3 +138,5 @@
     msg: "{{ node1_slave_status }} {{ node2_slave_status }}"
   tags: slave_status
 
+- include: keepalived.yml
+  tags: keepalived

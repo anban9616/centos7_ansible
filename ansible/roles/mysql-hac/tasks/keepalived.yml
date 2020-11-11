@@ -1,0 +1,42 @@
+- name: upload file and decrypt
+  unarchive:
+    src: keepalived-1.4.5.tar.gz
+    dest: /opt
+    copy: yes
+
+- name: install env
+  yum:
+    name:
+      - gcc
+      - openssl-devel
+      - popt-devel
+      - libnl-devel
+      - libnfnetlink-devel
+    state: present
+
+- name: copy install_keepalived.sh
+  copy:
+    src: install_keepalived.sh
+    dest: /opt
+
+- name: install keepalived
+  shell: bash /opt/install_keepalived.sh
+
+
+- name: configure service
+  lineinfile:
+    path: /usr/lib/systemd/system/keepalived.service
+    state: absent
+    regexp: '^.*KillMode=.*$'
+
+- name: daemod_reload
+  systemd:
+    daemon_reload: yes
+
+- include: keepalived_{{ keepalived.project }}.yml
+
+- name: restart keepalived
+  systemd:
+    name: keepalived
+    state: restarted
+    enabled: yes
