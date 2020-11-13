@@ -1,0 +1,52 @@
+---
+# tasks file for tomcat-hac
+
+- name: debug
+  debug:
+    msg: "{{ jdk_file }}"
+
+- name: mkdir java tomcat
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "/usr/local/java"
+    - "/usr/local/tomcat"
+
+- name: unarchive jdk
+  unarchive:
+    src: "{{ jdk_file }}"
+    dest: /usr/local/java
+    copy: yes
+
+- name: unarchive tomcat
+  unarchive:
+    src: "{{ tomcat_file }}"
+    dest: /usr/local/tomcat
+    copy: yes
+
+- name: config tomcat
+  lineinfile:
+    path: "{{ tomcat_path }}/bin/catalina.sh"
+    insertafter: CATALINA_BASE=\"\$CATALINA_HOME\"
+    line: CATALINA_PID="$CATALINA_BASE/tomcat.pid"
+    firstmatch: yes
+
+- name: tomcat service
+  template:
+    src: tomcat.service.j2
+    dest: /usr/lib/systemd/system/tomcat.service
+
+- name: systemd reload
+  systemd:
+    daemon_reload: yes
+
+- name: start tomcat
+  systemd:
+    name: tomcat
+    state: restarted
+    enabled: yes
+
+- include: keepalived.yml
+
+

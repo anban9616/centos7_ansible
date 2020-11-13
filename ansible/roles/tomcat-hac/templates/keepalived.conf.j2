@@ -1,0 +1,36 @@
+! Configuration File for keepalived
+
+global_defs {
+   router_id TOMCAT-HA
+}
+
+vrrp_script check_run {
+    script "{{ keepalived.tomcat_check }}"
+	interval 8
+	#这个间隔时间要大于脚本执行完的时间，不然脚本永远执行不到停止keepalived的命令。我这里脚本执行完大概6秒。
+}
+
+vrrp_instance VI_1 {
+    state BACKUP
+    interface {{ keepalived.interface }}
+    virtual_router_id 61
+{% if 'node3' in group_names %}
+    priority 120
+{% endif %}
+{% if 'node4' in group_names %}
+    priority 80
+{% endif %}
+    advert_int 1
+    nopreempt
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        {{ keepalived.vip }}
+    }
+
+    track_script {
+        check_run
+    }
+}

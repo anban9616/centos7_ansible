@@ -18,3 +18,13 @@ node2
 [node2]
 10.0.0.12
 
+
+[tomcat:children]
+node3
+node4
+
+[node3]
+10.0.0.13
+
+[node4]
+10.0.0.14

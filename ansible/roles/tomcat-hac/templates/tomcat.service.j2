@@ -1,0 +1,17 @@
+[Unit]
+Description=tomcat
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+
+Environment="JAVA_HOME={{jdk_path}}"
+
+PIDFile={{ tomcat_path }}/tomcat.pid
+ExecStart={{ tomcat_path }}/bin/startup.sh
+ExecStop={{ tomcat_path }}/bin/shutdown.sh
+ExecReload=/bin/kill -s HUP $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -31,10 +31,10 @@ virtual_server {{ groups.node1.0 }} 3306 {
 		weight 1
 		notify_down "{{ keepalived.kill_keepalived }}"
 		TCP_CHECK {
-			connect_timeout 3
+			connect_timeout 4
 			connect_port 3306
-			retry 3
-			delay_before_retry 3
+			#retry 3
+			#delay_before_retry 2
 		}
 	}
 }
@@ -66,10 +66,10 @@ virtual_server {{ groups.node2.0 }} 3306 {
 		weight 1
 		notify_down "{{ keepalived.kill_keepalived }}"
 		TCP_CHECK {
-			connect_timeout 3
+			connect_timeout 4
 			connect_port 3306
-			retry 3
-			delay_before_retry 3
+			#retry 3
+			#delay_before_retry 2
 		}
 	}
 }

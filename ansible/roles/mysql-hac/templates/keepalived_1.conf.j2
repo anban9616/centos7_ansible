@@ -6,7 +6,8 @@ global_defs {
 
 vrrp_script check_run {
     script "{{ keepalived.mysql_check }}"
-    interval 6
+    interval 8
+	#这个间隔时间要大于脚本执行完的时间，不然脚本永远执行不到停止keepalived的命令。我这里脚本执行完大概6秒。
 }
 
 vrrp_instance VI_1 {

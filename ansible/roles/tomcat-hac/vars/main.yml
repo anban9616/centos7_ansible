@@ -1,0 +1,12 @@
+---
+# vars file for tomcat-hac
+
+jdk_file: "jdk-8u261-linux-x64.tar.gz"
+tomcat_file: "apache-tomcat-9.0.39.tar.gz"
+jdk_path: /usr/local/java/jdk1.8.0_261
+tomcat_path: /usr/local/tomcat/apache-tomcat-9.0.39
+
+keepalived:
+  tomcat_check: /etc/keepalived/tomcat_check.sh
+  vip: 10.0.0.200/24
+  interface: ens33
