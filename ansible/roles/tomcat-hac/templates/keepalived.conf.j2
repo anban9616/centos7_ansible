@@ -1,11 +1,19 @@
 ! Configuration File for keepalived
 
 global_defs {
-   router_id TOMCAT-HA
+{% if keepalived.project == 'nginx' %}
+	router_id NGINX-HA
+{% elif keepalived.project == 'tomcat' %}
+	router_id TOMCAT-HA
+{% endif %}
 }
 
 vrrp_script check_run {
-    script "{{ keepalived.tomcat_check }}"
+{% if keepalived.project == 'nginx' %}
+	script "{{ keepalived.nginx_check }}"
+{% elif keepalived.project == 'tomcat' %}
+	script "{{ keepalived.tomcat_check }}"
+{% endif %}
 	interval 8
 	#这个间隔时间要大于脚本执行完的时间，不然脚本永远执行不到停止keepalived的命令。我这里脚本执行完大概6秒。
 }

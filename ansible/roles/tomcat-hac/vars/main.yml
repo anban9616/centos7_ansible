@@ -5,8 +5,16 @@ jdk_file: "jdk-8u261-linux-x64.tar.gz"
 tomcat_file: "apache-tomcat-9.0.39.tar.gz"
 jdk_path: /usr/local/java/jdk1.8.0_261
 tomcat_path: /usr/local/tomcat/apache-tomcat-9.0.39
+nginx1_ip: 10.0.0.13
+nginx2_ip: 10.0.0.14
+
 
 keepalived:
   tomcat_check: /etc/keepalived/tomcat_check.sh
+  nginx_check: /etc/keepalived/nginx_check.sh
+  script_path: /etc/keepalived
   vip: 10.0.0.200/24
+  vip_short: 10.0.0.200
   interface: ens33
+  project: nginx
+  #project可以为nginx或tomcat,nginx是keepalived+nginx+tomcat,tomcat是keepalived+tomcat

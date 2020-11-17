@@ -47,6 +47,41 @@
     state: restarted
     enabled: yes
 
-- include: keepalived.yml
+- include: install_keepalived.yml
 
+- include: install_nginx.yml
+  when: keepalived.project == 'nginx'
 
+- name: copy nginx.conf
+  template:
+    src: nginx.conf.j2
+    dest: /usr/local/nginx/conf/nginx.conf
+  when: keepalived.project == 'nginx'
+
+# 这一步非必须，只是为了看实验效果
+- name: change jsp file
+  lineinfile:
+    path: "{{ tomcat_path }}/webapps/ROOT/index.jsp"
+    regexp: '.*pageContext\.servletContext\.serverInfo.*$'
+    firstmatch: yes
+    line: '<h1>${pageContext.servletContext.serverInfo}({{ ansible_ens33.ipv4.address }})<%=request.getHeader("X-NGINX")%></h1>'
+  when: keepalived.project == 'nginx'
+  tags: debug
+
+- name: copy keepalived.conf
+  template:
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    backup: yes
+
+- name: copy check script
+  copy:
+    src: "{{ keepalived.project }}_check.sh"
+    dest: "{{ keepalived.script_path }}"
+    mode: '0744'
+
+- name: restart keepalived
+  systemd:
+    name: keepalived
+    state: restarted
+    enabled: yes

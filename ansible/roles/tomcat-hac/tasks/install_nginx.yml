@@ -1,0 +1,50 @@
+- name: upload nginx file
+  unarchive:
+    src: nginx-1.16.1.tar.gz
+    dest: /opt
+    copy: yes
+
+- name: install env
+  yum:
+    name:
+      - gcc
+      - gcc-c++
+      - autoconf
+      - automake
+      - make
+      - zlib
+      - zlib-devel
+      - openssl
+      - openssl-devel
+      - pcre
+      - pcre-devel
+    state: present
+
+- name: create www user
+  user:
+    name: www
+    state: present
+    shell: /sbin/nologin
+    create_home: false
+
+- name: copy install_nginx.sh
+  copy:
+    src: install_nginx.sh
+    dest: /opt
+
+- name: install_nginx
+  shell: bash /opt/install_nginx.sh
+
+- name: config nginx service
+  template:
+    src: nginx.service.j2
+    dest: /usr/lib/systemd/system/nginx.service
+
+- name: daemon reload
+  systemd:
+    daemon_reload: yes
+
+- name: restart nginx
+  systemd:
+    name: nginx
+    state: restarted
