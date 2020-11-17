@@ -17,10 +17,10 @@ http {
         location / {
             proxy_pass  http://tomcat;
 			{% if 'node3' in group_names %}
-			proxy_set_header X-NGINX 'X-NGINX1';
+            proxy_set_header X-NGINX 'X-NGINX1';
 			{% endif %}
 			{% if 'node4' in group_names %}
-			proxy_set_header X-NGINX 'X-NGINX2';
+            proxy_set_header X-NGINX 'X-NGINX2';
 			{% endif %}
         }
     }
