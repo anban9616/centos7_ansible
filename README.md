@@ -1,1 +1,0 @@
-# centos7_ansible
