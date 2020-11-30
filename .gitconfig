@@ -1,0 +1,5 @@
+[user]
+	name = anban9616
+	email = 2290838597@qq.com
+[core]
+	excludesfile = /root/.gitignore

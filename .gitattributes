@@ -1,0 +1,5 @@
+ansible/roles/hadoop-suite/files/zookeeper-3.4.11.tar.gz filter=lfs diff=lfs merge=lfs -text
+ansible/roles/hadoop-suite/files/hadoop-2.6.5.tar.gz filter=lfs diff=lfs merge=lfs -text
+ansible/roles/hadoop-suite/files/hbase-1.3.1-bin.tar.gz filter=lfs diff=lfs merge=lfs -text
+ansible/roles/hadoop-suite/files/jdk-8u261-linux-x64.tar.gz filter=lfs diff=lfs merge=lfs -text
+/root/ansible/roles/hadoop-suite/files/*.tar.gz filter=lfs diff=lfs merge=lfs -text
