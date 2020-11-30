@@ -4,6 +4,7 @@
 jdk_file: "jdk-8u261-linux-x64.tar.gz"
 jdk_path: /usr/local/java/jdk1.8.0_261
 hadoop_file: "hadoop-2.6.5.tar.gz"
+hadoop_path: "/home/hadoop/hadoop-2.6.5"
 zookeeper_file: "zookeeper-3.4.11.tar.gz"
 hbase_file: "hadoop-2.6.5.tar.gz"
 zk_dir: "/home/hadoop/zookeeper-3.4.11"

@@ -34,8 +34,8 @@
     line: "{{ item }}"
   with_items:
     - "server.1=master11:2888:3888"
-    - "server.2=master11:2888:3888"
-    - "server.3=slave11:2888:3888"
+    - "server.2=master12:2888:3888"
+    - "server.3=slave13:2888:3888"
 
 - name: rm myid
   file:
@@ -55,7 +55,7 @@
 - name: template zookeeper service file
   template:
     src: zookeeper.service.j2
-    dest: /usr/lib/systemd/user/zookeeper.service
+    dest: /usr/lib/systemd/system/zookeeper.service
     owner: root
     group: root
     mode: '0644'

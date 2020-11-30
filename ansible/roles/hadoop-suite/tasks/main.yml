@@ -12,6 +12,26 @@
     dest: /etc/hosts
     backup: yes
 
+- name: mkdir java
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "/usr/local/java"
+
+- name: unarchive jdk
+  unarchive:
+    src: "{{ jdk_file }}"
+    dest: /usr/local/java
+    copy: yes
+  tags: bigfile
+
+- name: export java_home
+  lineinfile:
+    regexp: "JAVA_HOME="
+    path: "/etc/profile"
+    line: "export JAVA_HOME={{ jdk_path }}"
+
 - include: zookeeper.yml
 
 - include: hadoop.yml

@@ -1,15 +1,9 @@
 # install hadoop
-- name: mkdir java
-  file:
-    path: "{{ item }}"
-    state: directory
-  with_items:
-    - "/usr/local/java"
 
-- name: unarchive jdk
+- name: unarchive hadoop
   unarchive:
-    src: "{{ jdk_file }}"
-    dest: /usr/local/java
+    src: "{{ hadoop_file }}"
+    dest: /home/hadoop
     copy: yes
-
+  tags: test
 
