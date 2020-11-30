@@ -1,0 +1,71 @@
+
+- name: unarchive zookeeper
+  unarchive:
+    src: "{{ zookeeper_file }}"
+    dest: /home/hadoop
+    copy: yes
+    owner: hadoop
+    group: hadoop
+
+- name: copy zoo.cfg
+  copy:
+    src: "{{ zk_dir }}/conf/zoo_sample.cfg"
+    dest: "{{ zk_dir }}/conf/zoo.cfg"
+    remote_src: true
+
+- name: create dataDir
+  file:
+    path: "{{ zk_datadir }}"
+    state: directory
+    mode: '0755'
+    owner: hadoop
+    group: hadoop
+
+- name: config zoo.cfg
+  lineinfile:
+    path: "{{ zk_dir }}/conf/zoo.cfg"
+    regexp: "^dataDir=.*$"
+    line: "dataDir={{ zk_datadir }}"
+
+- name: append zoo.cfg
+  lineinfile:
+    path: "{{ zk_dir }}/conf/zoo.cfg"
+    regexp: "^aksdjflsjdlfjslddfjls$"
+    line: "{{ item }}"
+  with_items:
+    - "server.1=master11:2888:3888"
+    - "server.2=master11:2888:3888"
+    - "server.3=slave11:2888:3888"
+
+- name: rm myid
+  file:
+    path: "{{ zk_datadir }}/myid"
+    state: absent
+
+# {{ myid }} 是在hosts文件中定义的主机变量
+- name: create myid
+  lineinfile:
+    path: "{{ zk_datadir }}/myid"
+    create: true
+    line: "{{ myid }}"
+    state: present
+    owner: hadoop
+    group: hadoop
+
+- name: template zookeeper service file
+  template:
+    src: zookeeper.service.j2
+    dest: /usr/lib/systemd/user/zookeeper.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: reload daemon
+  systemd:
+    daemon_reload: true
+
+- name: start zookeeper
+  systemd:
+    name: zookeeper
+    state: restarted
+    enabled: true

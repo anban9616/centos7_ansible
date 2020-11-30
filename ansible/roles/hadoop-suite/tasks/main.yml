@@ -1,0 +1,19 @@
+---
+# tasks file for hadoop-suite
+- name: add hadoop user
+  user:
+    name: hadoop
+    state: present
+    create_home: true
+
+- name: copy hosts file
+  copy:
+    src: hosts
+    dest: /etc/hosts
+    backup: yes
+
+- include: zookeeper.yml
+
+- include: hadoop.yml
+
+- include: hbase.yml

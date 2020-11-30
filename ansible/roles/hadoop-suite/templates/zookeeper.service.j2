@@ -1,0 +1,23 @@
+[Unit]
+# 服务描述
+Description=zookeeper.service
+# 在网络服务启动后运行
+After=network.target
+
+[Service]
+# 指定用户
+User=hadoop
+# 指定用户组
+Group=hadoop
+Type=forking
+# jdk环境变量
+Environment=JAVA_HOME={{ jdk_path }}
+# 启动命令
+ExecStart={{ zk_dir }}/bin/zkServer.sh start
+# 停止命令
+ExecStop={{ zk_dir }}/bin/zkServer.sh stop
+# 重载命令
+ExecReload={{ zk_dir }}/bin/zkServer.sh restart
+
+[Install]
+WantedBy=multi-user.target

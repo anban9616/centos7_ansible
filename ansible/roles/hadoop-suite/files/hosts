@@ -1,0 +1,7 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+10.0.0.11 master11.anban.com master11
+10.0.0.12 master12.anban.com master12
+10.0.0.13 slave13.anban.com slave13
+
